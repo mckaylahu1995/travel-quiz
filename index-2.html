@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>你的下一站在哪里？</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --ink2: #4a4a6a;
+    --ink3: #9090aa;
+    --paper: #faf9f6;
+    --paper2: #f0ede6;
+    --accent: #c9a96e;
+    --accent2: #e8d5b0;
+    --red: #d4574a;
+    --green: #4a9068;
+    --r: 12px;
+    --r-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    width: 100%;
+    background: var(--ink);
+    color: var(--paper);
+    text-align: center;
+    padding: 64px 24px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 120%, rgba(201,169,110,.15) 0%, transparent 70%);
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(28px, 6vw, 48px);
+    font-weight: 600;
+    line-height: 1.25;
+    margin-bottom: 16px;
+  }
+  .hero p {
+    color: rgba(255,255,255,.55);
+    font-size: 14px;
+    max-width: 340px;
+    margin: 0 auto 36px;
+    line-height: 1.7;
+  }
+  .btn-start {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--ink);
+    border: none;
+    border-radius: 100px;
+    padding: 14px 36px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer;
+    transition: transform .15s, background .15s;
+    position: relative;
+  }
+  .btn-start:hover { background: #d4b07a; transform: translateY(-1px); }
+  .btn-start:active { transform: translateY(0); }
+
+  /* ── MAIN ── */
+  .main {
+    width: 100%;
+    max-width: 560px;
+    padding: 32px 20px 80px;
+  }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 3px;
+    background: var(--paper2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width .4s ease;
+  }
+  .progress-label {
+    font-size: 12px;
+    color: var(--ink3);
+    white-space: nowrap;
+  }
+
+  /* ── CATEGORY TAG ── */
+  .cat-tag {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: .1em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  /* ── QUESTION ── */
+  .q-text {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(18px, 4vw, 24px);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--ink);
+    margin-bottom: 28px;
+  }
+
+  /* ── OPTIONS ── */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #fff;
+    border: 1px solid var(--paper2);
+    border-radius: var(--r);
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, transform .1s;
+    text-align: left;
+  }
+  .opt:hover { border-color: var(--accent2); background: #fffdf8; }
+  .opt:active { transform: scale(.99); }
+  .opt.selected {
+    border-color: var(--accent);
+    background: #fffbf2;
+  }
+  .opt-icon {
+    font-size: 20px;
+    width: 32px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .opt-text {
+    font-size: 14px;
+    color: var(--ink2);
+    line-height: 1.5;
+  }
+  .opt.selected .opt-text { color: var(--ink); font-weight: 400; }
+
+  /* ── NAV ── */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .btn-back {
+    background: none;
+    border: none;
+    color: var(--ink3);
+    font-size: 13px;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer;
+    padding: 8px 0;
+  }
+  .btn-back:hover { color: var(--ink2); }
+  .btn-next {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 100px;
+    padding: 12px 28px;
+    font-size: 14px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    opacity: .3;
+    pointer-events: none;
+    transition: opacity .2s, transform .1s;
+  }
+  .btn-next.active { opacity: 1; pointer-events: auto; }
+  .btn-next:hover { transform: translateY(-1px); }
+  .btn-next:active { transform: translateY(0); }
+
+  /* ── RESULT ── */
+  .result-hero {
+    text-align: center;
+    padding: 40px 0 32px;
+  }
+  .result-rank {
+    font-size: 11px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .result-emoji { font-size: 52px; margin-bottom: 12px; }
+  .result-name {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .result-country { font-size: 14px; color: var(--ink3); margin-bottom: 20px; }
+  .result-vibe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .vibe-tag {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    background: var(--paper2);
+    color: var(--ink2);
+  }
+
+  .result-desc {
+    background: #fff;
+    border: 1px solid var(--paper2);
+    border-radius: var(--r);
+    padding: 18px 20px;
+    font-size: 14px;
+    color: var(--ink2);
+    line-height: 1.8;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .info-card {
+    background: #fff;
+    border: 1px solid var(--paper2);
+    border-radius: var(--r-sm);
+    padding: 12px 14px;
+  }
+  .info-label { font-size: 11px; color: var(--ink3); margin-bottom: 4px; }
+  .info-val { font-size: 13px; font-weight: 500; color: var(--ink); }
+
+  /* runners-up */
+  .runners-title {
+    font-size: 12px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 12px;
+  }
+  .runners {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+  .runner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid var(--paper2);
+    border-radius: var(--r-sm);
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color .15s;
+  }
+  .runner:hover { border-color: var(--accent2); }
+  .runner-emoji { font-size: 20px; }
+  .runner-info { flex: 1; }
+  .runner-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .runner-country { font-size: 11px; color: var(--ink3); }
+  .runner-score {
+    font-size: 11px;
+    background: var(--paper2);
+    color: var(--ink2);
+    padding: 2px 8px;
+    border-radius: 100px;
+  }
+
+  /* action buttons */
+  .actions { display: flex; flex-direction: column; gap: 10px; }
+  .btn-share {
+    width: 100%;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: var(--r);
+    padding: 16px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-share:hover { background: #c44a3d; }
+  .btn-retry {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--paper2);
+    border-radius: var(--r);
+    padding: 14px;
+    font-size: 14px;
+    color: var(--ink3);
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  .btn-retry:hover { border-color: var(--ink3); color: var(--ink2); }
+
+  /* ── TRANSITIONS ── */
+  .fade-in { animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero" id="hero-screen">
+  <p class="hero-eyebrow">旅行测评 · 2025</p>
+  <h1>你的下一站<br>在哪里？</h1>
+  <p>31道题，为你匹配全球80+个目的地中最适合你的那一个</p>
+  <button class="btn-start" onclick="startQuiz()">开始测评 →</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- QUIZ -->
+  <div class="screen" id="quiz-screen">
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="prog"></div></div>
+      <span class="progress-label" id="prog-label">1 / 30</span>
+    </div>
+    <p class="cat-tag" id="cat-tag"></p>
+    <p class="q-text" id="q-text"></p>
+    <div class="options" id="options"></div>
+    <div class="nav">
+      <button class="btn-back" id="btn-back" onclick="goBack()">← 上一题</button>
+      <button class="btn-next" id="btn-next" onclick="goNext()">下一题</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="result-screen"></div>
+
+</div>
+
+<script>
+const questions = [
+  { id:"q1", category:"旅行风格", text:"理想的旅行第一天是？", options:[
+    {text:"出发前一周就做好了每小时的计划",icon:"📋",weights:{pace:"fast",tags:["city"]}},
+    {text:"列了几个必去的，其他随缘",icon:"📍",weights:{pace:"medium"}},
+    {text:"只订了机票和第一晚的酒店",icon:"✈️",weights:{pace:"medium",vibe:["adventurous"]}},
+    {text:"什么都没计划，到了再说",icon:"🎲",weights:{pace:"slow",vibe:["adventurous","bohemian"]}}
+  ]},
+  { id:"q2", category:"旅行风格", text:"旅行中最让你有成就感的事是？", options:[
+    {text:"把清单上的景点全部打卡",icon:"✅",weights:{pace:"fast",tags:["city","culture"]}},
+    {text:"找到一家没有中文菜单的本地馆子",icon:"🍜",weights:{tags:["food"],vibe:["authentic","foodie"]}},
+    {text:"在一个地方住了好几天，认识了当地人",icon:"🤝",weights:{pace:"slow",vibe:["authentic"]}},
+    {text:"拍到一张让人看了就想去的照片",icon:"📸",weights:{tags:["photography"],vibe:["picturesque"]}}
+  ]},
+  { id:"q3", category:"旅行风格", text:"你通常在旅行中几点起床？", options:[
+    {text:"天亮就起，不能浪费时间",icon:"🌅",weights:{pace:"fast"}},
+    {text:"八九点，正常作息",icon:"☀️",weights:{pace:"medium"}},
+    {text:"十点以后，度假嘛",icon:"😴",weights:{pace:"slow",tags:["beach","luxury"]}},
+    {text:"凌晨才睡，更别说早起",icon:"🌙",weights:{tags:["nightlife"],vibe:["party"]}}
+  ]},
+  { id:"q4", category:"旅行风格", text:"旅行结束后你希望感受到的是？", options:[
+    {text:"充实——看了很多、学了很多",icon:"🧠",weights:{tags:["culture","history"]}},
+    {text:"放松——真的休息到了",icon:"🌿",weights:{tags:["wellness","beach"],vibe:["relaxing"]}},
+    {text:"刺激——经历了平时没有的事",icon:"⚡",weights:{tags:["adventure"],vibe:["adventurous"]}},
+    {text:"感动——被某个人或某个地方触动了",icon:"💛",weights:{vibe:["romantic","spiritual","atmospheric"]}}
+  ]},
+  { id:"q5", category:"预算", text:"旅行预算大概是每人多少？", options:[
+    {text:"S$500 以内，能省则省",icon:"💸",weights:{budget:"low"}},
+    {text:"S$500–1,500，舒适就好",icon:"💰",weights:{budget:"low",budgetAlt:"medium"}},
+    {text:"S$1,500–4,000，品质优先",icon:"💳",weights:{budget:"medium",budgetAlt:"high"}},
+    {text:"S$4,000 以上，不将就",icon:"💎",weights:{budget:"high",budgetAlt:"luxury"}}
+  ]},
+  { id:"q6", category:"预算", text:"住宿你倾向于？", options:[
+    {text:"青旅或民宿，能跟人聊天",icon:"🛏️",weights:{budget:"low",vibe:["adventurous"]}},
+    {text:"三星酒店，干净够用就行",icon:"🏨",weights:{budget:"low",budgetAlt:"medium"}},
+    {text:"四星以上，早餐和泳池很重要",icon:"🏩",weights:{budget:"medium",budgetAlt:"high"}},
+    {text:"五星或度假村，住的地方就是目的地",icon:"🏰",weights:{budget:"luxury",tags:["luxury"]}}
+  ]},
+  { id:"q7", category:"预算", text:"对于机票，你的态度是？", options:[
+    {text:"宁愿多转一次，便宜就行",icon:"🔄",weights:{budget:"low"}},
+    {text:"直飞，但要找最便宜的直飞",icon:"✈️",weights:{budget:"low",budgetAlt:"medium"}},
+    {text:"直飞，价格不是第一考量",icon:"🛫",weights:{budget:"medium",budgetAlt:"high"}},
+    {text:"商务舱，旅程本身也是体验",icon:"🛋️",weights:{budget:"luxury"}}
+  ]},
+  { id:"q8", category:"气候", text:"你最享受哪种天气？", options:[
+    {text:"热带阳光，30度以上才叫度假",icon:"☀️",weights:{climate:"tropical"}},
+    {text:"温和舒适，20度左右最完美",icon:"🌤️",weights:{climate:"temperate",climateAlt:"mediterranean"}},
+    {text:"地中海式，干燥晴朗凉爽",icon:"🌊",weights:{climate:"mediterranean"}},
+    {text:"寒冷甚至下雪，越冷越有气氛",icon:"❄️",weights:{climate:"cold"}}
+  ]},
+  { id:"q9", category:"气候", text:"对于大自然，你更偏爱？", options:[
+    {text:"海滩，沙白水蓝什么都值了",icon:"🏖️",weights:{tags:["beach"]}},
+    {text:"山，登顶的那一刻无可替代",icon:"⛰️",weights:{tags:["hiking","nature","adventure"]}},
+    {text:"森林或雨林，绿色让我平静",icon:"🌳",weights:{tags:["nature","wellness"]}},
+    {text:"沙漠或荒野，极端的景观才震撼",icon:"🏜️",weights:{tags:["desert","unique"],climate:"desert"}}
+  ]},
+  { id:"q10", category:"气候", text:"你愿意为了特殊自然现象专程去一个地方吗？", options:[
+    {text:"当然，极光/火山/彩虹山值得一切",icon:"🌌",weights:{tags:["unique","adventure","photography"]}},
+    {text:"如果顺路的话可以",icon:"👍",weights:{tags:["nature"]}},
+    {text:"不太在意，城市和文化更吸引我",icon:"🏙️",weights:{tags:["city","culture"]}},
+    {text:"只要有好天气就行，不需要特殊",icon:"☀️",weights:{climate:"tropical",climateAlt:"mediterranean"}}
+  ]},
+  { id:"q11", category:"美食", text:"旅行中对美食的态度是？", options:[
+    {text:"美食本身就是旅行的目的之一",icon:"🍽️",weights:{tags:["food"],vibe:["foodie"]}},
+    {text:"喜欢尝鲜，但不会专程为吃去一个地方",icon:"😋",weights:{tags:["food"]}},
+    {text:"随便吃，主要看价格",icon:"🍱",weights:{budget:"low"}},
+    {text:"挑食，最好有熟悉的口味",icon:"😅",weights:{tags:["city"]}}
+  ]},
+  { id:"q12", category:"美食", text:"你更喜欢哪种用餐体验？", options:[
+    {text:"街边小摊，一脚踏入就是当地人的生活",icon:"🥢",weights:{vibe:["authentic","adventurous"],tags:["food"]}},
+    {text:"热闹的市集，各种吃的看的",icon:"🏮",weights:{tags:["food","nightlife"]}},
+    {text:"有点格调的餐厅，氛围好很重要",icon:"🕯️",weights:{vibe:["refined","romantic"],budget:"medium"}},
+    {text:"米其林或主厨餐厅，为了一顿值得",icon:"⭐",weights:{budget:"luxury",tags:["food","luxury"]}}
+  ]},
+  { id:"q13", category:"文化", text:"博物馆对你来说是？", options:[
+    {text:"必去，能在里面待一整天",icon:"🖼️",weights:{tags:["art","history","culture"]}},
+    {text:"去一两个经典的就够了",icon:"👀",weights:{tags:["culture"]}},
+    {text:"一般不主动去，除非碰上特别的展",icon:"🤷",weights:{}},
+    {text:"旅行不想进博物馆，直接去街头更真实",icon:"🚶",weights:{vibe:["authentic","adventurous"]}}
+  ]},
+  { id:"q14", category:"文化", text:"你对历史遗迹的态度是？", options:[
+    {text:"着迷，每块石头背后都是故事",icon:"🏛️",weights:{tags:["history","culture","architecture"]}},
+    {text:"有兴趣，但不会钻研细节",icon:"📜",weights:{tags:["culture"]}},
+    {text:"随大流，大家都去我就去",icon:"🧑‍🤝‍🧑",weights:{}},
+    {text:"不太感兴趣，更喜欢现代城市",icon:"🏙️",weights:{tags:["city","nightlife","shopping"]}}
+  ]},
+  { id:"q15", category:"文化", text:"购物在你的旅行中占多少比重？", options:[
+    {text:"很大，带空箱子去带满箱子回",icon:"🛍️",weights:{tags:["shopping"],vibe:["urban"]}},
+    {text:"会买纪念品和特产，不是主要目的",icon:"🎁",weights:{}},
+    {text:"只买必需品，旅行不是为了消费",icon:"🪶",weights:{budget:"low"}},
+    {text:"买奢侈品或独特的东西，少而精",icon:"💍",weights:{budget:"luxury",tags:["luxury","shopping"]}}
+  ]},
+  { id:"q16", category:"文化", text:"对于语言不通的地方，你的感受是？", options:[
+    {text:"反而有意思，比划和翻译软件搞定一切",icon:"😄",weights:{vibe:["adventurous","authentic"]}},
+    {text:"有点烦，但能接受",icon:"😐",weights:{}},
+    {text:"比较在意，喜欢能用英语沟通的地方",icon:"🗣️",weights:{tags:["city"]}},
+    {text:"完全不在乎，住好就行",icon:"🛌",weights:{budget:"luxury",tags:["luxury","beach"]}}
+  ]},
+  { id:"q17", category:"同伴", text:"这次旅行你会和谁一起？", options:[
+    {text:"另一半，想创造只属于我们的记忆",icon:"💑",weights:{companions:["couple"]}},
+    {text:"好朋友，人多才热闹",icon:"👯",weights:{companions:["friends"]}},
+    {text:"家人，安全舒适是第一位",icon:"👨‍👩‍👧",weights:{companions:["family"]}},
+    {text:"一个人，最自由",icon:"🧍",weights:{companions:["solo"]}}
+  ]},
+  { id:"q18", category:"同伴", text:"旅行中你更想要？", options:[
+    {text:"和同伴一直在一起，共同经历",icon:"🤝",weights:{companions:["couple","friends"]}},
+    {text:"有时分开行动，各自探索",icon:"🗺️",weights:{companions:["friends","solo"]}},
+    {text:"认识新朋友，本地人或其他旅行者",icon:"🌏",weights:{vibe:["adventurous","authentic"],companions:["solo"]}},
+    {text:"独处，旅行是充电时间",icon:"🔋",weights:{pace:"slow",companions:["solo"]}}
+  ]},
+  { id:"q19", category:"夜生活", text:"理想的旅行夜晚是？", options:[
+    {text:"酒吧或夜店，一直玩到天亮",icon:"🎉",weights:{tags:["nightlife"],vibe:["party"]}},
+    {text:"屋顶酒吧看夜景，喝一杯就够",icon:"🥂",weights:{tags:["nightlife"],vibe:["urban","romantic"]}},
+    {text:"夜市扫摊，边走边吃",icon:"🏮",weights:{tags:["food","nightlife"],vibe:["foodie"]}},
+    {text:"早点回去，明天还要早起",icon:"🌙",weights:{pace:"fast",tags:["culture"]}}
+  ]},
+  { id:"q20", category:"活动", text:"以下哪项活动最让你心动？", options:[
+    {text:"浮潜或潜水，看水下世界",icon:"🤿",weights:{tags:["diving","beach"]}},
+    {text:"徒步或爬山，用脚丈量大地",icon:"🥾",weights:{tags:["hiking","nature","adventure"]}},
+    {text:"烹饪课或美食体验",icon:"👨‍🍳",weights:{tags:["food"],vibe:["authentic"]}},
+    {text:"Spa 或瑜伽，身心全面放松",icon:"🧘",weights:{tags:["wellness"],vibe:["relaxing","spiritual"]}}
+  ]},
+  { id:"q21", category:"活动", text:"对于极限运动，你的态度是？", options:[
+    {text:"就是为了这个去的，越刺激越好",icon:"🪂",weights:{tags:["adventure"],vibe:["adventurous"]}},
+    {text:"可以试一两个，但不是主要目的",icon:"🙂",weights:{tags:["adventure"]}},
+    {text:"只看不做，给别人拍照",icon:"📱",weights:{tags:["photography"]}},
+    {text:"完全不感兴趣，生命安全第一",icon:"🙅",weights:{pace:"slow",tags:["wellness"]}}
+  ]},
+  { id:"q22", category:"分享", text:"你旅行时拍多少照片？", options:[
+    {text:"每天几百张，拍是旅行的一部分",icon:"📸",weights:{tags:["photography"],vibe:["picturesque"]}},
+    {text:"拍够了就行，不用每个角落都记录",icon:"🤳",weights:{}},
+    {text:"偶尔拍几张，更多是用眼睛看",icon:"👁️",weights:{pace:"slow"}},
+    {text:"基本不拍，活在当下",icon:"🧘",weights:{vibe:["relaxing","spiritual"]}}
+  ]},
+  { id:"q23", category:"分享", text:"旅行完你会怎么做？", options:[
+    {text:"发小红书或 Instagram 长篇游记",icon:"📱",weights:{tags:["photography","city"]}},
+    {text:"发几张照片分享一下",icon:"🖼️",weights:{}},
+    {text:"只发家庭群",icon:"👨‍👩‍👧",weights:{companions:["family"]}},
+    {text:"不发，旅行是私人的事",icon:"🔒",weights:{vibe:["relaxing"]}}
+  ]},
+  { id:"q24", category:"偏好", text:"你更偏爱哪种城市氛围？", options:[
+    {text:"超级都市，摩天楼和霓虹灯",icon:"🌃",weights:{tags:["city","nightlife"],vibe:["urban","energetic"]}},
+    {text:"古老小镇，街道铺着鹅卵石",icon:"🏘️",weights:{tags:["history","culture"],vibe:["historic","atmospheric"]}},
+    {text:"热带海滨小城，慢节奏",icon:"🌴",weights:{tags:["beach"],climate:"tropical",pace:"slow"}},
+    {text:"山城或高原，空气清新视野开阔",icon:"🏔️",weights:{tags:["nature","hiking"],climate:"temperate"}}
+  ]},
+  { id:"q25", category:"偏好", text:"对于旅行安全感，你更看重？", options:[
+    {text:"治安好、环境整洁，不想担惊受怕",icon:"🛡️",weights:{vibe:["refined"],tags:["city"]}},
+    {text:"一点点混乱和未知感才有趣",icon:"🌀",weights:{vibe:["adventurous","authentic"]}},
+    {text:"政治稳定、没有自然灾害就好",icon:"🕊️",weights:{companions:["family"]}},
+    {text:"完全不在意，冒险就要有代价",icon:"🎯",weights:{vibe:["adventurous"],tags:["adventure"]}}
+  ]},
+  { id:"q26", category:"偏好", text:"旅行时你最喜欢的交通方式是？", options:[
+    {text:"公共交通，地铁公交感受当地生活",icon:"🚇",weights:{vibe:["authentic","urban"],budget:"low"}},
+    {text:"租车自驾，自由度最高",icon:"🚗",weights:{vibe:["adventurous"],tags:["nature"]}},
+    {text:"打车或专车，省心省力",icon:"🚕",weights:{budget:"medium",pace:"medium"}},
+    {text:"骑单车或徒步，慢慢来",icon:"🚲",weights:{pace:"slow",vibe:["relaxed","authentic"]}}
+  ]},
+  { id:"q27", category:"偏好", text:"以下哪个词最能描述你的旅行风格？", options:[
+    {text:"探索者——总想去没人去过的地方",icon:"🧭",weights:{vibe:["adventurous","unique"],tags:["unique"]}},
+    {text:"享乐者——旅行就是为了开心和放松",icon:"🎈",weights:{vibe:["relaxing","luxurious"]}},
+    {text:"文化人——旅行是了解世界的方式",icon:"📚",weights:{tags:["culture","history","art"]}},
+    {text:"社交动物——认识人融入当地才最爽",icon:"🌍",weights:{vibe:["authentic","vibrant"]}}
+  ]},
+  { id:"q28", category:"偏好", text:"你愿意去同一个地方超过两次吗？", options:[
+    {text:"会，某些城市值得一去再去",icon:"💞",weights:{tags:["city","food","culture"]}},
+    {text:"不太会，世界那么大",icon:"🌏",weights:{tags:["unique","adventure"]}},
+    {text:"如果有新的东西可以发现，会",icon:"🔍",weights:{tags:["culture","food"]}},
+    {text:"只回度假天堂，那里不需要新东西",icon:"🏝️",weights:{tags:["beach","luxury"],pace:"slow"}}
+  ]},
+  { id:"q29", category:"偏好", text:"对于旅行中的「网红打卡地」，你的态度是？", options:[
+    {text:"必去，这就是旅行的意义",icon:"📸",weights:{tags:["photography"],vibe:["picturesque"]}},
+    {text:"去但也会找非主流的地方",icon:"🗺️",weights:{vibe:["authentic"]}},
+    {text:"尽量避开，太多人没意思",icon:"🙈",weights:{vibe:["adventurous","authentic"]}},
+    {text:"没什么想法，好不好玩才重要",icon:"🤷",weights:{pace:"medium"}}
+  ]},
+  { id:"q30", category:"偏好", text:"如果只能带一件东西旅行，你会带？", options:[
+    {text:"相机，记录一切",icon:"📷",weights:{tags:["photography"],vibe:["picturesque"]}},
+    {text:"好书或耳机，旅途中也要享受",icon:"🎧",weights:{pace:"slow",vibe:["relaxing"]}},
+    {text:"信用卡，钱能解决的不叫问题",icon:"💳",weights:{budget:"luxury",tags:["luxury","shopping"]}},
+    {text:"空胃，就是为了吃",icon:"🍴",weights:{tags:["food"],vibe:["foodie"]}}
+  ]},
+  { id:"q31", category:"偏好", text:"对于「大众 vs 小众」目的地，你的真实想法是？", options:[
+    {text:"大众的就是经典，口碑好才放心",icon:"🌍",weights:{popularity:"mainstream"}},
+    {text:"大众也去，但更想找小众亮点",icon:"🔍",weights:{popularity:"mixed"}},
+    {text:"宁可折腾，也要去没什么人的地方",icon:"🧭",weights:{popularity:"hidden"}},
+    {text:"越没人知道越好，我不想晒朋友圈",icon:"🤫",weights:{popularity:"secret"}}
+  ]},
+];
+
+const destinations = [
+  {id:"tokyo",name:"东京",country:"日本",emoji:"🗼",popularity:5,tags:["city","food","culture","shopping","nightlife","tech"],budget:"medium",climate:"temperate",pace:"fast",vibe:["urban","quirky","refined"],companions:["solo","friends","couple"],season:"春季",duration:"7–10天",budgetRange:"S$1,500–2,500",desc:"你是那种会为一碗拉面专程搭一小时地铁的人。东京的密度让人上瘾——每走进一条小巷都是新世界，从秋叶原的赛博朋克到代官山的精致，完全停不下来。",highlights:["涩谷十字路口","筑地早市","新宿夜生活","富士山一日游"]},
+  {id:"kyoto",name:"京都",country:"日本",emoji:"⛩️",popularity:5,tags:["culture","history","nature","slow","temples","food"],budget:"medium",climate:"temperate",pace:"slow",vibe:["traditional","peaceful","romantic"],companions:["couple","solo","family"],season:"春季",duration:"4–6天",budgetRange:"S$1,200–2,000",desc:"京都不是用来赶景点的，是用来发呆的。清晨的岚山竹林、傍晚的伏见稻荷、下午的抹茶甜品店……每一个瞬间都像明信片。",highlights:["伏见稻荷","岚山竹林","祇园花见小路","哲学之道"]},
+  {id:"bali",name:"巴厘岛",country:"印度尼西亚",emoji:"🌺",popularity:5,tags:["beach","nature","culture","wellness","food","photography"],budget:"low",climate:"tropical",pace:"slow",vibe:["relaxing","spiritual","romantic","bohemian"],companions:["couple","solo","friends"],season:"全年",duration:"5–8天",budgetRange:"S$800–1,500",desc:"从新加坡飞过去才2.5小时，却像换了个星球。乌布的稻田、水明漾的日落、努沙的碧海——巴厘岛的每种心情都有对应的角落。",highlights:["圣猴森林","海神庙日落","德格拉朗梯田","冲浪课"]},
+  {id:"seoul",name:"首尔",country:"韩国",emoji:"🇰🇷",popularity:5,tags:["city","food","shopping","nightlife","culture","kpop"],budget:"medium",climate:"temperate",pace:"fast",vibe:["urban","trendy","foodie"],companions:["friends","couple","solo"],season:"秋季",duration:"4–6天",budgetRange:"S$1,000–1,800",desc:"首尔是东亚潮流的发动机，每个区都有自己的性格。弘大的年轻躁动、圣水洞的工业美学、北村的古典沉静，三天打不完。",highlights:["弘大街头","汉江公园","景福宫","圣水洞咖啡街"]},
+  {id:"maldives",name:"马尔代夫",country:"马尔代夫",emoji:"🏝️",popularity:4,tags:["beach","luxury","diving","romance","nature"],budget:"luxury",climate:"tropical",pace:"slow",vibe:["romantic","luxurious","relaxing"],companions:["couple"],season:"冬季",duration:"4–6天",budgetRange:"S$3,500–8,000",desc:"有些地方不需要理由，马尔代夫就是其中一个。水屋、清晨浮潜、海底餐厅——这里是专门为那些不想妥协的人造的。",highlights:["水上屋日出","珊瑚礁浮潜","沙滩晚餐","海豚观赏"]},
+  {id:"paris",name:"巴黎",country:"法国",emoji:"🗼",popularity:5,tags:["culture","art","food","romance","history","fashion"],budget:"high",climate:"temperate",pace:"medium",vibe:["romantic","artistic","refined"],companions:["couple","solo","friends"],season:"春季",duration:"5–7天",budgetRange:"S$3,000–5,000",desc:"巴黎是一个你会带着偏见去、带着爱恋回来的城市。卢浮宫、塞纳河畔、蒙马特的街头画家——每一个画面都值得记录。",highlights:["卢浮宫","埃菲尔铁塔","马黑区","凡尔赛宫"]},
+  {id:"hanoi",name:"河内",country:"越南",emoji:"🌿",popularity:3,tags:["culture","food","history","budget","photography"],budget:"low",climate:"tropical",pace:"medium",vibe:["adventurous","authentic","foodie"],companions:["solo","friends","couple"],season:"秋季",duration:"3–5天",budgetRange:"S$400–800",desc:"河内的节奏是混乱又迷人的——摩托车海、街边咖啡、法式建筑夹杂在老城巷弄里，每一条街都有故事。",highlights:["还剑湖","36条老街","胡志明陵","周末夜市"]},
+  {id:"danang",name:"岘港",country:"越南",emoji:"🏖️",popularity:2,tags:["beach","food","nature","budget","relaxing"],budget:"low",climate:"tropical",pace:"slow",vibe:["relaxing","foodie","adventurous"],companions:["couple","family","friends"],season:"春季",duration:"4–6天",budgetRange:"S$500–1,000",desc:"越南最低调的宝藏城市。美溪海滩比芽庄安静，会安古镇离这里30分钟，海鲜新鲜又便宜。",highlights:["美溪海滩","会安古镇","巴拿山","海鲜市场"]},
+  {id:"bangkok",name:"曼谷",country:"泰国",emoji:"🛕",popularity:5,tags:["food","culture","nightlife","shopping","budget","temples"],budget:"low",climate:"tropical",pace:"fast",vibe:["vibrant","foodie","urban"],companions:["friends","solo","couple"],season:"冬季",duration:"4–6天",budgetRange:"S$600–1,200",desc:"曼谷是东南亚的缩影：混乱、热闹、好吃，24小时不停歇。从大皇宫到 Chatuchak 市集，节奏永远拉满。",highlights:["大皇宫","卧佛寺","考山路","夜市扫摊"]},
+  {id:"chiangmai",name:"清迈",country:"泰国",emoji:"🐘",popularity:3,tags:["nature","culture","wellness","food","temples","slow"],budget:"low",climate:"tropical",pace:"slow",vibe:["peaceful","spiritual","adventurous"],companions:["solo","couple","friends"],season:"冬季",duration:"4–7天",budgetRange:"S$500–1,000",desc:"清迈是数字游民的圣地，也是那些想从城市节奏里逃出来的人的避风港。大象保护区、素贴山寺、夜市——北部泰国自有一套慢节奏。",highlights:["大象保护营","素贴山双龙寺","周日夜市","泰北美食"]},
+  {id:"phuket",name:"普吉岛",country:"泰国",emoji:"🌊",popularity:4,tags:["beach","diving","nightlife","food","budget"],budget:"low",climate:"tropical",pace:"medium",vibe:["party","relaxing","adventurous"],companions:["friends","couple","solo"],season:"冬季",duration:"5–7天",budgetRange:"S$700–1,400",desc:"普吉岛满足你对东南亚海岛的一切想象——白沙滩、潜水、泰式海鲜、夜生活。",highlights:["攀牙湾","皮皮岛","甲米悬崖","芭东夜生活"]},
+  {id:"taipei",name:"台北",country:"台湾",emoji:"🧋",popularity:4,tags:["food","culture","city","nightlife","shopping"],budget:"low",climate:"temperate",pace:"medium",vibe:["foodie","urban","friendly"],companions:["friends","couple","solo","family"],season:"秋季",duration:"4–6天",budgetRange:"S$700–1,200",desc:"台北是亚洲最友善的城市之一。夜市文化、珍珠奶茶、九份老街——中文世界里没有哪里的人比台湾人更热情好客。",highlights:["九份老街","饶河夜市","阳明山","故宫博物院"]},
+  {id:"hongkong",name:"香港",country:"中国香港",emoji:"🌃",popularity:4,tags:["city","food","shopping","culture","nightlife"],budget:"high",climate:"temperate",pace:"fast",vibe:["urban","foodie","energetic"],companions:["friends","couple","solo","family"],season:"秋季",duration:"3–5天",budgetRange:"S$1,000–2,000",desc:"香港的美在于密度——维港夜景、叮叮车、茶餐厅、米其林街头小吃，全都挤在这个不大的地方。",highlights:["维港夜景","旺角街市","大澳渔村","兰桂坊"]},
+  {id:"barcelona",name:"巴塞罗那",country:"西班牙",emoji:"🏛️",popularity:5,tags:["art","beach","food","nightlife","architecture","culture"],budget:"high",climate:"mediterranean",pace:"medium",vibe:["vibrant","artistic","foodie"],companions:["couple","friends","solo"],season:"春季",duration:"5–7天",budgetRange:"S$2,500–4,500",desc:"巴塞罗那是高迪留给世界的礼物。圣家堂的光影、海边的啤酒、凌晨三点还在跳舞的人们——这座城市的能量让人上头。",highlights:["圣家堂","古埃尔公园","兰布拉大道","博盖利亚市场"]},
+  {id:"amsterdam",name:"阿姆斯特丹",country:"荷兰",emoji:"🚲",popularity:4,tags:["culture","art","history","canal","food","nightlife"],budget:"high",climate:"temperate",pace:"slow",vibe:["relaxed","artistic","liberal"],companions:["couple","friends","solo"],season:"春季",duration:"3–5天",budgetRange:"S$2,500–4,000",desc:"阿姆斯特丹是一座适合骑车发呆的城市。运河边的老房子、梵高博物馆、郁金香花田——荷兰的慢节奏是一种解药。",highlights:["运河游船","梵高博物馆","安妮之家","库肯霍夫花园"]},
+  {id:"iceland",name:"冰岛",country:"冰岛",emoji:"🌋",popularity:3,tags:["nature","adventure","aurora","photography","unique"],budget:"luxury",climate:"cold",pace:"medium",vibe:["adventurous","dramatic","unique"],companions:["couple","friends","solo"],season:"冬季",duration:"7–10天",budgetRange:"S$4,000–7,000",desc:"冰岛不像地球上的地方。极光、火山、冰川、温泉——这里是专门给那些觉得普通目的地不够刺激的人准备的。",highlights:["极光追踪","黄金圈","蓝湖温泉","冰川徒步"]},
+  {id:"santorini",name:"圣托里尼",country:"希腊",emoji:"🌅",popularity:5,tags:["romance","photography","beach","wine","luxury"],budget:"luxury",climate:"mediterranean",pace:"slow",vibe:["romantic","luxurious","picturesque"],companions:["couple"],season:"夏季",duration:"4–6天",budgetRange:"S$3,500–6,000",desc:"白色建筑、蓝色穹顶、爱琴海、橙红色天空——圣托里尼的每一帧都不需要滤镜。",highlights:["伊亚日落","红沙滩","阿克罗蒂里遗址","火山徒步"]},
+  {id:"prague",name:"布拉格",country:"捷克",emoji:"🏰",popularity:3,tags:["history","architecture","culture","food","beer","romance"],budget:"medium",climate:"temperate",pace:"slow",vibe:["romantic","historic","atmospheric"],companions:["couple","solo","friends"],season:"秋季",duration:"3–5天",budgetRange:"S$1,500–2,800",desc:"布拉格是欧洲保存最完好的中世纪城市之一，而且物价比西欧便宜一半。鹅卵石小巷、哥特式教堂、波西米亚啤酒——时光在这里慢了下来。",highlights:["查理大桥","布拉格城堡","旧城广场","小区酒馆"]},
+  {id:"newyork",name:"纽约",country:"美国",emoji:"🗽",popularity:5,tags:["city","culture","food","art","nightlife","shopping"],budget:"high",climate:"temperate",pace:"fast",vibe:["urban","energetic","diverse"],companions:["solo","friends","couple"],season:"秋季",duration:"7–10天",budgetRange:"S$3,500–6,000",desc:"纽约是一座城市，也是一种状态。中央公园、百老汇、布鲁克林——每个街区都是一个平行世界，永远有新东西等着你发现。",highlights:["中央公园","大都会艺术博物馆","百老汇","布鲁克林大桥"]},
+  {id:"morocco",name:"摩洛哥",country:"摩洛哥",emoji:"🕌",popularity:2,tags:["culture","photography","adventure","food","unique","desert"],budget:"medium",climate:"desert",pace:"medium",vibe:["adventurous","exotic","artistic"],companions:["solo","couple","friends"],season:"春季",duration:"7–10天",budgetRange:"S$1,500–3,000",desc:"摩洛哥是一个会迷路的地方，而且你乐意迷路。马拉喀什的麦地那、蓝城舍夫沙万、撒哈拉沙漠的星空——每一天都像在拍电影。",highlights:["马拉喀什广场","蓝色小镇","撒哈拉骑驼","菲斯老城"]},
+  {id:"peru",name:"秘鲁",country:"秘鲁",emoji:"🏔️",popularity:2,tags:["adventure","history","nature","photography","unique"],budget:"medium",climate:"temperate",pace:"medium",vibe:["adventurous","historic","dramatic"],companions:["solo","friends","couple"],season:"冬季",duration:"10–14天",budgetRange:"S$2,500–4,500",desc:"马丘比丘是那种你在照片里见过一千次，但亲眼站在那里还是会哭的地方。",highlights:["马丘比丘","库斯科","彩虹山","亚马逊雨林"]},
+  {id:"dubai",name:"迪拜",country:"阿联酋",emoji:"🏙️",popularity:4,tags:["luxury","shopping","desert","architecture","nightlife"],budget:"luxury",climate:"desert",pace:"medium",vibe:["luxurious","futuristic","extravagant"],companions:["couple","friends","family"],season:"冬季",duration:"4–6天",budgetRange:"S$2,500–6,000",desc:"迪拜是一个把「最高」「最大」「最贵」当做日常词汇的地方。哈利法塔、沙漠越野、奢华购物中心——这里是给欲望充电的地方。",highlights:["哈利法塔","沙漠越野","迪拜购物节","水上乐园"]},
+  {id:"newzealand",name:"新西兰",country:"新西兰",emoji:"🏔️",popularity:3,tags:["nature","adventure","hiking","photography","unique"],budget:"high",climate:"temperate",pace:"medium",vibe:["adventurous","dramatic","peaceful"],companions:["couple","friends","solo","family"],season:"夏季",duration:"10–14天",budgetRange:"S$4,000–7,000",desc:"新西兰是《指环王》的取景地，也是极限运动的发源地。皇后镇蹦极、米尔福德峡湾——每一个画面都超越了你的想象力。",highlights:["皇后镇极限运动","米尔福德峡湾","霍比特人村","冰川徒步"]},
+  {id:"rome",name:"罗马",country:"意大利",emoji:"🏛️",popularity:5,tags:["history","food","art","culture","romance","architecture"],budget:"high",climate:"mediterranean",pace:"medium",vibe:["historic","romantic","foodie"],companions:["couple","friends","family","solo"],season:"春季",duration:"4–6天",budgetRange:"S$2,500–4,500",desc:"斗兽场、梵蒂冈、许愿池、各种 pasta 和 gelato——这是一座每一块石头都有两千年历史的城市。",highlights:["斗兽场","梵蒂冈","特莱维喷泉","博盖塞美术馆"]},
+  {id:"lisbon",name:"里斯本",country:"葡萄牙",emoji:"🚋",popularity:3,tags:["culture","food","music","history","budget","photography"],budget:"medium",climate:"mediterranean",pace:"slow",vibe:["relaxed","melancholic","authentic"],companions:["solo","couple","friends"],season:"春季",duration:"4–6天",budgetRange:"S$1,800–3,200",desc:"里斯本是欧洲最被低估的首都。叮当车、法朵音乐、葡式蛋挞——比巴黎便宜，比巴塞罗那安静。",highlights:["贝伦塔","阿尔法马老城","辛特拉宫殿","法朵之夜"]},
+
+  // ── 东南亚小众 ──
+  {id:"luangprabang",name:"琅勃拉邦",country:"老挝",emoji:"🛕",popularity:1,tags:["culture","temples","nature","slow","photography","unique"],budget:"low",climate:"tropical",pace:"slow",vibe:["peaceful","spiritual","authentic","atmospheric"],companions:["solo","couple"],season:"冬季",duration:"4–6天",budgetRange:"S$400–800",desc:"琅勃拉邦是东南亚最后几个还没被过度开发的古城之一。清晨僧侣化缘的队伍、湄公河边的落日、法式殖民建筑与寺庙并存——安静得让人忘记时间。",highlights:["清晨布施仪式","光西瀑布","湄公河日落船","夜市手工艺"]},
+  {id:"kampot",name:"贡布",country:"柬埔寨",emoji:"🌿",popularity:1,tags:["beach","nature","slow","food","unique","wellness"],budget:"low",climate:"tropical",pace:"slow",vibe:["relaxing","bohemian","authentic"],companions:["solo","couple","friends"],season:"冬季",duration:"3–5天",budgetRange:"S$300–600",desc:"柬埔寨最被忽视的角落。贡布的节奏慢得像在退休——河边咖啡馆、胡椒庄园、螃蟹市场，没有一个地方是专门为游客准备的，所有东西都还是本来的样子。",highlights:["贡布胡椒庄园","博科高原","螃蟹市场","河边骑行"]},
+  {id:"flores",name:"弗洛雷斯",country:"印度尼西亚",emoji:"🌋",popularity:1,tags:["nature","adventure","diving","photography","unique","hiking"],budget:"low",climate:"tropical",pace:"medium",vibe:["adventurous","dramatic","authentic"],companions:["solo","friends","couple"],season:"春季",duration:"5–8天",budgetRange:"S$600–1,200",desc:"弗洛雷斯是印尼最被低估的岛屿。科莫多龙、三色火山口湖、粉红沙滩——每一个景象都是别处没有的。这里的游客比巴厘岛少了99%，却美了不止一倍。",highlights:["科莫多龙","三色火山口湖","粉红沙滩","科莫多潜水"]},
+  {id:"hpa_an",name:"帕安",country:"缅甸",emoji:"⛰️",popularity:1,tags:["nature","culture","hiking","photography","unique","temples"],budget:"low",climate:"tropical",pace:"slow",vibe:["adventurous","authentic","spiritual","dramatic"],companions:["solo","couple"],season:"冬季",duration:"3–5天",budgetRange:"S$300–600",desc:"帕安是缅甸最神秘的角落之一。石灰岩山峰、藏在洞穴里的佛像、水上村庄——每天骑着摩托车随便拐进一条路，都是一张国家地理封面。",highlights:["萨丹洞穴佛像","高丹岩石庙","帕安日落","水上村庄骑行"]},
+  {id:"el_nido",name:"爱妮岛",country:"菲律宾",emoji:"🏝️",popularity:2,tags:["beach","diving","nature","photography","adventure"],budget:"low",climate:"tropical",pace:"slow",vibe:["adventurous","relaxing","dramatic"],companions:["couple","friends","solo"],season:"冬季",duration:"5–7天",budgetRange:"S$600–1,200",desc:"爱妮岛是菲律宾最后一块净土级别的海岛。巨大的石灰岩峭壁从海里拔地而起，把翡翠色的泻湖围在中间——这种地貌在地球上屈指可数。",highlights:["大泻湖皮划艇","秘密泻湖","珊瑚礁浮潜","岛屿跳跃"]},
+  {id:"sipalay",name:"西帕莱",country:"菲律宾",emoji:"🌊",popularity:1,tags:["beach","diving","nature","unique","slow"],budget:"low",climate:"tropical",pace:"slow",vibe:["relaxing","adventurous","authentic"],companions:["solo","couple"],season:"冬季",duration:"4–6天",budgetRange:"S$400–800",desc:"菲律宾几乎没有中国游客知道这个地方。西帕莱的白沙滩和珊瑚礁是菲律宾保存最好的之一，没有大型度假村，只有几家潜水者聚集的小旅馆。",highlights:["糖沙滩","珊瑚花园潜水","比西亚斯海洋保护区","日落骑马"]},
+
+  // ── 东亚（日韩台以外）──
+  {id:"jiufen",name:"九份",country:"台湾",emoji:"🏮",popularity:3,tags:["culture","photography","food","history","atmospheric"],budget:"low",climate:"temperate",pace:"slow",vibe:["atmospheric","nostalgic","picturesque"],companions:["couple","solo","friends"],season:"秋季",duration:"1–2天",budgetRange:"S$100–300",desc:"九份的雨天比晴天更好看。山城里密密麻麻的红灯笼、迷宫般的石阶小路、茶馆窗外的海景——这里是《千与千寻》给了很多人的第一印象。",highlights:["竖崎路红灯笼","阿妹茶馆","基山街小食","矿山博物馆"]},
+  {id:"tainan",name:"台南",country:"台湾",emoji:"🏯",popularity:2,tags:["culture","food","history","slow","authentic"],budget:"low",climate:"tropical",pace:"slow",vibe:["authentic","foodie","historic"],companions:["solo","couple","friends"],season:"冬季",duration:"3–4天",budgetRange:"S$400–700",desc:"台湾人自己最爱的城市。台南没有台北的热闹，只有三百年历史的街道、庙宇、和全台湾最好吃的小吃。当地人说：到台南，不是来旅游的，是来吃饭的。",highlights:["赤崁楼","安平古堡","担仔面","花园夜市"]},
+  {id:"gyeongju",name:"庆州",country:"韩国",emoji:"🌕",popularity:2,tags:["history","culture","nature","temples","slow"],budget:"low",climate:"temperate",pace:"slow",vibe:["historic","peaceful","authentic"],companions:["couple","solo","family"],season:"秋季",duration:"2–3天",budgetRange:"S$500–900",desc:"庆州是韩国的京都。整座城市就是一个露天博物馆——新罗王朝的古墓散落在住宅区之间，佛国寺的秋天和京都一样美，但人少了十倍。",highlights:["佛国寺","石窟庵","大陵苑古墓群","月城公园骑行"]},
+  {id:"yakushima",name:"屋久岛",country:"日本",emoji:"🌲",popularity:1,tags:["nature","hiking","unique","photography","wellness"],budget:"medium",climate:"temperate",pace:"slow",vibe:["dramatic","peaceful","unique"],companions:["solo","couple"],season:"春季",duration:"3–4天",budgetRange:"S$900–1,600",desc:"屋久岛是《幽灵公主》森林的原型。岛上有树龄超过七千年的绳文杉，苔藓覆盖的原始森林里常年有雨，云雾在树梢之间流动——这不像是地球上的地方。",highlights:["绳文杉徒步","白谷云水峡","苔藓森林","宫之浦岳登顶"]},
+
+  // ── 南亚 ──
+  {id:"hampi",name:"亨比",country:"印度",emoji:"🏛️",popularity:1,tags:["history","culture","unique","photography","adventure"],budget:"low",climate:"desert",pace:"slow",vibe:["historic","dramatic","adventurous","unique"],companions:["solo","couple","friends"],season:"冬季",duration:"3–4天",budgetRange:"S$300–600",desc:"亨比是世界上最超现实的遗址之一。巨大的花岗岩巨石堆叠在橙色大地上，16世纪维查耶纳伽尔帝国的废墟散落其间——骑着自行车穿行其中，感觉在拍一部史诗电影。",highlights:["维鲁帕克萨神庙","象厩","维塔拉神庙的音乐柱","巨石上看日落"]},
+  {id:"pondicherry",name:"本地治里",country:"印度",emoji:"🌺",popularity:1,tags:["culture","food","history","slow","wellness","unique"],budget:"low",climate:"tropical",pace:"slow",vibe:["relaxed","artistic","authentic","bohemian"],companions:["solo","couple"],season:"冬季",duration:"3–4天",budgetRange:"S$300–700",desc:"本地治里是印度的法国角落。黄色和白色的殖民建筑、法语路牌、海边长廊——这个前法属殖民地保留了一种奇特的混搭气质，连咖啡馆都比印度其他地方好喝一倍。",highlights:["法式街区散步","奥罗宾多修道院","海边长廊","法式早餐咖啡馆"]},
+  {id:"sri_lanka_ella",name:"埃勒",country:"斯里兰卡",emoji:"🍃",popularity:2,tags:["nature","hiking","photography","slow","unique","tea"],budget:"low",climate:"tropical",pace:"slow",vibe:["peaceful","dramatic","adventurous"],companions:["solo","couple","friends"],season:"冬季",duration:"3–5天",budgetRange:"S$400–800",desc:"斯里兰卡最美的高地小镇。绿色的茶园铺满山坡，九拱桥在云雾里若隐若现，小火车穿过茶园缓缓开来——这个画面是斯里兰卡的标志，但很少人真的在这里住下来。",highlights:["九拱桥茶园","小亚当峰日出","茶叶工厂参观","高地小火车"]},
+
+  // ── 中东 & 非洲 ──
+  {id:"oman_muscat",name:"马斯喀特",country:"阿曼",emoji:"🕌",popularity:1,tags:["culture","history","unique","nature","desert"],budget:"medium",climate:"desert",pace:"medium",vibe:["authentic","refined","adventurous"],companions:["couple","solo","friends"],season:"冬季",duration:"4–6天",budgetRange:"S$1,200–2,500",desc:"阿曼是中东最被忽视的国家。没有迪拜的浮夸，马斯喀特的老苏丹区、白色清真寺、峡湾和沙漠——阿曼人的好客程度会让你怀疑自己是不是在梦里。",highlights:["苏丹清真寺","穆特拉苏克集市","瓦迪峡谷探险","沙漠营地星空"]},
+  {id:"zanzibar",name:"桑给巴尔",country:"坦桑尼亚",emoji:"🏝️",popularity:2,tags:["beach","culture","history","diving","unique"],budget:"medium",climate:"tropical",pace:"slow",vibe:["exotic","relaxing","adventurous","authentic"],companions:["couple","solo","friends"],season:"冬季",duration:"5–7天",budgetRange:"S$1,000–2,500",desc:"桑给巴尔是印度洋上的香料岛。石头城的阿拉伯迷宫、努戈维的粉白沙滩、水下的珊瑚礁——非洲大陆和阿拉伯世界在这里奇妙融合，空气里飘着丁香的味道。",highlights:["石头城旧城区","努戈维海滩","香料农场之旅","珊瑚礁浮潜"]},
+  {id:"ethiopia",name:"埃塞俄比亚",country:"埃塞俄比亚",emoji:"🦁",popularity:1,tags:["culture","history","nature","unique","adventure","photography"],budget:"low",climate:"temperate",pace:"medium",vibe:["adventurous","unique","authentic","dramatic"],companions:["solo","friends"],season:"冬季",duration:"10–14天",budgetRange:"S$1,200–2,500",desc:"埃塞俄比亚是一个让你重新定义「旅行」的地方。达纳基尔凹地是地球上最像外星的地貌，拉利贝拉的岩石教堂建于12世纪，咖啡的发源地——每件事都是世界唯一。",highlights:["达纳基尔火山温泉","拉利贝拉岩石教堂","国家公园长颈鹿","原始咖啡仪式"]},
+
+  // ── 欧洲小众 ──
+  {id:"tbilisi",name:"第比利斯",country:"格鲁吉亚",emoji:"🍷",popularity:1,tags:["culture","food","wine","history","nightlife","unique","budget"],budget:"low",climate:"temperate",pace:"medium",vibe:["adventurous","authentic","vibrant","bohemian"],companions:["solo","friends","couple"],season:"秋季",duration:"5–7天",budgetRange:"S$600–1,200",desc:"格鲁吉亚是欧洲旅行者的秘密。第比利斯的老城区像是一座还没被发现的布拉格——硫磺浴、天然橙酒、高加索山下的烤肉、凌晨四点还在唱歌的酒馆——这里的人活得太热情了。",highlights:["硫磺浴区","纳里卡拉古堡","酒庄橙酒品鉴","老城区夜生活"]},
+  {id:"kotor",name:"科托尔",country:"黑山",emoji:"🏰",popularity:1,tags:["history","nature","photography","architecture","slow","unique"],budget:"low",climate:"mediterranean",pace:"slow",vibe:["atmospheric","romantic","historic","picturesque"],companions:["couple","solo"],season:"春季",duration:"3–4天",budgetRange:"S$700–1,400",desc:"科托尔是亚得里亚海最被低估的古城。威尼斯式的城墙把整座中世纪小城围起来，峡湾从山脚延伸入海——这里被誉为巴尔干的杜布罗夫尼克，但游客只有它的十分之一。",highlights:["科托尔城墙爬山","圣特里芬大教堂","博卡湾船游","佩拉斯特小镇"]},
+  {id:"plovdiv",name:"普罗夫迪夫",country:"保加利亚",emoji:"🎨",popularity:1,tags:["culture","history","art","food","budget","authentic"],budget:"low",climate:"temperate",pace:"slow",vibe:["artistic","authentic","atmospheric","relaxed"],companions:["solo","couple","friends"],season:"春季",duration:"2–3天",budgetRange:"S$400–800",desc:"保加利亚是欧洲最被低估的国家，普罗夫迪夫是它最有趣的城市。罗马剧场、彩色的奥斯曼老城区、街头艺术、很便宜的自然酒庄——欧洲2019年文化之都，却几乎没有亚洲游客。",highlights:["罗马圆形剧场","老城彩色房子区","Kapana创意街区","葡萄酒品鉴"]},
+  {id:"sintra",name:"辛特拉",country:"葡萄牙",emoji:"🏰",popularity:2,tags:["history","architecture","nature","photography","unique"],budget:"medium",climate:"mediterranean",pace:"slow",vibe:["romantic","picturesque","historic","dramatic"],companions:["couple","solo","family"],season:"春季",duration:"1–2天",budgetRange:"S$300–600",desc:"辛特拉是童话书里的地方——彩色的宫殿建在云雾缭绕的山顶，摩尔人的城堡俯视着大西洋。从里斯本坐40分钟火车就到，但很多人只是当作一日游，错过了早晨和傍晚最美的光线。",highlights:["佩纳宫","摩尔人城堡","雷加莱拉庄园","大西洋悬崖日落"]},
+
+  // ── 美洲 ──
+  {id:"oaxaca",name:"瓦哈卡",country:"墨西哥",emoji:"🌶️",popularity:1,tags:["culture","food","art","history","unique","authentic"],budget:"low",climate:"temperate",pace:"slow",vibe:["artistic","authentic","vibrant","foodie"],companions:["solo","couple","friends"],season:"冬季",duration:"5–7天",budgetRange:"S$700–1,400",desc:"瓦哈卡是美食人类学家心中的圣地。这里有墨西哥最复杂的传统菜系、最有活力的土著手工艺、亡灵节最原真的庆典——而且几乎没有沙滩游客，来的都是真正懂墨西哥文化的人。",highlights:["中央市场街头美食","蒙特阿尔班遗址","梅斯卡尔酒庄","亡灵节庆典"]},
+  {id:"cartagena",name:"卡塔赫纳",country:"哥伦比亚",emoji:"🌸",popularity:2,tags:["history","culture","food","photography","romance","beach"],budget:"low",climate:"tropical",pace:"medium",vibe:["romantic","vibrant","historic","colorful"],companions:["couple","friends","solo"],season:"冬季",duration:"4–6天",budgetRange:"S$700–1,400",desc:"卡塔赫纳是南美最上镜的城市。殖民地时期的彩色房子、鲜花覆盖的阳台、加勒比海的清晨——加西亚·马尔克斯在这里写了《霍乱时期的爱情》，你来了就明白为什么。",highlights:["老城彩色街道","圣菲利普城堡","罗萨里奥群岛","黄昏马车游"]},
+  {id:"patagonia",name:"巴塔哥尼亚",country:"阿根廷/智利",emoji:"🏔️",popularity:2,tags:["nature","hiking","adventure","photography","unique","dramatic"],budget:"high",climate:"cold",pace:"medium",vibe:["dramatic","adventurous","unique","peaceful"],companions:["solo","friends","couple"],season:"夏季",duration:"10–14天",budgetRange:"S$3,500–7,000",desc:"巴塔哥尼亚是地球的尽头，也是徒步者的天堂。菲茨罗伊峰的锯齿轮廓、托雷斯德尔帕伊内国家公园的蓝冰河、旷野里的风——这里的尺度大到让人觉得自己很渺小，又很自由。",highlights:["菲茨罗伊峰徒步","托雷斯德尔帕伊内W线","佩里托莫雷诺冰川","乌斯怀亚世界尽头"]},
+
+  // ── 大洋洲 & 太平洋岛屿 ──
+  {id:"raja_ampat",name:"拉贾安帕特",country:"印度尼西亚",emoji:"🤿",popularity:1,tags:["diving","nature","beach","unique","photography","adventure"],budget:"high",climate:"tropical",pace:"slow",vibe:["adventurous","unique","dramatic","relaxing"],companions:["solo","couple","friends"],season:"秋季",duration:"7–10天",budgetRange:"S$2,500–5,000",desc:"拉贾安帕特是全球公认的最佳潜水地之一，也是最难到达的地方之一。珊瑚三角的核心地带，水下物种丰富度无与伦比——如果你只打算在生命中潜一次水，来这里。",highlights:["曼塔鱼群潜水","隐藏泻湖皮划艇","水上屋日落","鸟类观察"]},
+  {id:"tonga",name:"汤加",country:"汤加",emoji:"🐋",popularity:1,tags:["nature","diving","unique","adventure","wildlife"],budget:"medium",climate:"tropical",pace:"slow",vibe:["adventurous","unique","peaceful"],companions:["solo","couple"],season:"春季",duration:"7–10天",budgetRange:"S$2,000–4,000",desc:"汤加是太平洋上最后几个几乎没有大规模旅游业的岛国之一。每年7-10月，座头鲸在这里繁殖，你可以下水与它们一起游泳——这在全球只有极少数地方可以合法体验。",highlights:["与座头鲸共泳","'Eua岛徒步","海底拱门潜水","传统波利尼西亚村落"]},
+
+  // ── 东南亚深度小众 ──
+  {id:"mergui",name:"缅甸群岛",country:"缅甸",emoji:"🏝️",popularity:1,tags:["beach","diving","nature","unique","adventure"],budget:"medium",climate:"tropical",pace:"slow",vibe:["adventurous","unique","peaceful","relaxing"],companions:["solo","couple","friends"],season:"冬季",duration:"5–8天",budgetRange:"S$1,200–2,500",desc:"缅甸群岛（Mergui Archipelago）是东南亚最后一片几乎无人涉足的海域，800多个岛屿几乎全部无人居住。莫肯海上游牧民族世代生活在这片水域，珊瑚礁原始完整，这里是真正意义上的与世隔绝。",highlights:["莫肯海上游牧村","原始珊瑚礁潜水","无人岛露营","红树林皮划艇"]},
+  {id:"koh_lanta",name:"兰塔岛",country:"泰国",emoji:"🌴",popularity:2,tags:["beach","nature","diving","slow","wellness"],budget:"low",climate:"tropical",pace:"slow",vibe:["relaxing","bohemian","peaceful"],companions:["couple","solo","friends"],season:"冬季",duration:"5–7天",budgetRange:"S$500–1,000",desc:"兰塔岛是普吉和苏梅游客溢出之前就存在的那种泰国海岛——长长的海滩没什么人，老城区还有马来渔村的影子，夜晚安静到只剩海浪声。",highlights:["哈拉拉海滩日落","兰塔老城马来街","海洋公园浮潜","红树林皮划艇"]},
+  {id:"mekong_delta",name:"湄公河三角洲",country:"越南",emoji:"🛶",popularity:1,tags:["nature","culture","food","authentic","photography"],budget:"low",climate:"tropical",pace:"slow",vibe:["authentic","peaceful","adventurous"],companions:["solo","couple","friends"],season:"冬季",duration:"3–4天",budgetRange:"S$300–600",desc:"湄公河三角洲是越南最鲜活的角落。水上市场天亮就开始，小船穿梭在绿色水道之间，椰奶糖工坊的香气飘满整条街——这里是南越人的日常，不是为游客表演的。",highlights:["卡伦水上市场","椰奶糖工坊","运河骑行","本贝三角洲深处"]},
+  {id:"sapa",name:"沙坝",country:"越南",emoji:"🌾",popularity:2,tags:["nature","hiking","culture","photography","unique"],budget:"low",climate:"temperate",pace:"medium",vibe:["dramatic","authentic","adventurous","peaceful"],companions:["solo","couple","friends"],season:"秋季",duration:"3–5天",budgetRange:"S$400–800",desc:"沙坝的梯田是人类农耕文明最美的形式之一。每年秋收季节，层层叠叠的金色稻田从山顶铺到谷底，苗族和黑摇族村民穿着传统服饰在田间劳作——这是越南最值得徒步的地方。",highlights:["法板村梯田徒步","苗族黑摇族文化村","番西邦峰登顶","山地市集"]},
+  {id:"tioman",name:"刁曼岛",country:"马来西亚",emoji:"🐢",popularity:1,tags:["beach","diving","nature","unique","wildlife"],budget:"low",climate:"tropical",pace:"slow",vibe:["relaxing","adventurous","peaceful"],companions:["couple","solo","friends"],season:"春季",duration:"4–6天",budgetRange:"S$400–900",desc:"刁曼岛是马来西亚最美却最少人去的热带岛屿，曾被《时代》杂志列为全球最美海岛之一。热带雨林延伸到海边，珊瑚礁清晰可见，海龟在沙滩上产卵——而且从新加坡坐船只需4小时。",highlights:["珊瑚礁浮潜","热带雨林徒步","海龟观察","无人湾游泳"]},
+
+  // ── 南亚深度 ──
+  {id:"bhutan",name:"不丹",country:"不丹",emoji:"🏔️",popularity:1,tags:["culture","nature","hiking","unique","spiritual","temples"],budget:"luxury",climate:"temperate",pace:"slow",vibe:["spiritual","peaceful","unique","dramatic"],companions:["solo","couple"],season:"春季",duration:"7–10天",budgetRange:"S$3,000–6,000",desc:"不丹是世界上唯一以「国民幸福指数」代替GDP的国家，每天限制入境人数。虎穴寺悬挂在900米峭壁上，帕罗的稻田和寺庙让人觉得时间停止了——这是一个刻意保持慢节奏的王国。",highlights:["虎穴寺徒步","廷布周末市集","普纳卡宗堡","高山徒步路线"]},
+  {id:"hampi2",name:"果阿北部",country:"印度",emoji:"🌊",popularity:2,tags:["beach","culture","food","nightlife","bohemian","history"],budget:"low",climate:"tropical",pace:"slow",vibe:["bohemian","relaxing","vibrant","authentic"],companions:["solo","friends","couple"],season:"冬季",duration:"5–8天",budgetRange:"S$400–900",desc:"果阿的北部和南部是两个世界。北果阿的阿果达堡、巴加海滩和安久纳跳蚤市场，保留了70年代嬉皮士文化的遗迹，而不是南部那种批量度假村——这里是印度最放松的角落。",highlights:["安久纳跳蚤市场","阿果达堡","芒格斯寺庙","海鲜龙虾晚餐"]},
+  {id:"sri_lanka_trinco",name:"亭可马里",country:"斯里兰卡",emoji:"🐋",popularity:1,tags:["beach","diving","wildlife","nature","unique"],budget:"low",climate:"tropical",pace:"slow",vibe:["adventurous","relaxing","unique"],companions:["solo","couple","friends"],season:"夏季",duration:"4–6天",budgetRange:"S$400–900",desc:"亭可马里是斯里兰卡东海岸最美的秘密——天然深水港、世界顶级的鲸鱼观察地、几乎没有开发的白沙海湾。5-9月，蓝鲸和抹香鲸定期出没在海湾入口。",highlights:["蓝鲸观察出海","尼拉维利海滩","皮鱼诺湖浮潜","山顶神庙日出"]},
+
+  // ── 东亚冷门 ──
+  {id:"kanazawa",name:"金泽",country:"日本",emoji:"🎎",popularity:1,tags:["culture","food","history","art","slow","authentic"],budget:"medium",climate:"temperate",pace:"slow",vibe:["traditional","refined","authentic","peaceful"],companions:["couple","solo"],season:"春季",duration:"3–4天",budgetRange:"S$900–1,600",desc:"金泽被称为「小京都」，但比京都少了九成游客。兼六园的雪吊、东茶屋街的老金箔工坊、近江町市场的海鲜——这座城市因江户时代就与东京隔绝而完整地保存了下来。",highlights:["兼六园","东茶屋街","近江町市场","21世纪当代艺术馆"]},
+  {id:"naoshima",name:"直岛",country:"日本",emoji:"🎨",popularity:1,tags:["art","culture","unique","photography","slow"],budget:"medium",climate:"temperate",pace:"slow",vibe:["artistic","unique","peaceful","refined"],companions:["solo","couple"],season:"春季",duration:"2–3天",budgetRange:"S$800–1,500",desc:"直岛是当代艺术与自然融合的奇迹。安藤忠雄设计的地中美术馆藏在山丘里，草间弥生的波点南瓜立在海边，整个岛就是一个户外美术馆——这里是让文艺青年沉默的地方。",highlights:["地中美术馆","草间弥生南瓜","家计划艺术村","贝尼斯之家"]},
+  {id:"jeju",name:"济州岛",country:"韩国",emoji:"🌋",popularity:3,tags:["nature","hiking","beach","food","unique"],budget:"low",climate:"temperate",pace:"medium",vibe:["adventurous","peaceful","authentic"],companions:["couple","solo","family","friends"],season:"春季",duration:"4–5天",budgetRange:"S$600–1,200",desc:"济州岛是韩国的化外之地，汉拿山火山、熔岩洞窟、黑沙滩、海女文化——和首尔完全不同的韩国。春天的油菜花田和秋天的芒草原是拍照圣地，而且从新加坡直飞只需6小时。",highlights:["汉拿山登顶","万丈窟熔岩洞","城山日出峰","海女表演与海鲜"]},
+  {id:"busan",name:"釜山",country:"韩国",emoji:"🌊",popularity:2,tags:["beach","food","culture","city","nature"],budget:"low",climate:"temperate",pace:"medium",vibe:["vibrant","foodie","authentic"],companions:["friends","couple","solo"],season:"夏季",duration:"3–5天",budgetRange:"S$600–1,200",desc:"釜山是首尔之外最值得去的韩国城市。海云台海滩、甘川文化村的彩色台阶、札嘎其鱼市场、广安里的夜景——这座港口城市比首尔更接地气，食物也更直接。",highlights:["海云台海滩","甘川文化村","札嘎其鱼市场","范一鑫梯田"] },
+
+  // ── 欧洲深度小众 ──
+  {id:"faroe",name:"法罗群岛",country:"丹麦法罗群岛",emoji:"🌊",popularity:1,tags:["nature","hiking","photography","unique","dramatic"],budget:"high",climate:"cold",pace:"medium",vibe:["dramatic","unique","adventurous","peaceful"],companions:["solo","couple","friends"],season:"夏季",duration:"5–7天",budgetRange:"S$3,000–5,500",desc:"法罗群岛是北大西洋上18个悬崖岛屿的集合，云雾从山顶滑落入海，瀑布直接跌入大西洋，绿色草场延伸到天边——这是世界上最不像地球的地方之一，却几乎没有亚洲游客。",highlights:["穆拉福斯瀑布","特雷兰尼波尼悬崖步道","加斯达利克村","午夜极昼徒步"]},
+  {id:"bled",name:"布莱德",country:"斯洛文尼亚",emoji:"🏰",popularity:2,tags:["nature","romance","photography","hiking","unique"],budget:"medium",climate:"temperate",pace:"slow",vibe:["romantic","picturesque","peaceful","dramatic"],companions:["couple","solo"],season:"春季",duration:"2–4天",budgetRange:"S$800–1,600",desc:"布莱德湖是斯洛文尼亚最著名的明信片——湖心小岛上的白色教堂，背后是积雪的阿尔卑斯山，朝阳照在湖面上。比起奥地利哈尔施塔特，这里的游客少一半，物价也便宜一半。",highlights:["布莱德湖皮划艇","湖心岛教堂","布莱德城堡俯瞰","特里格拉夫国家公园"]},
+  {id:"porto",name:"波尔图",country:"葡萄牙",emoji:"🍷",popularity:2,tags:["culture","food","wine","history","photography","budget"],budget:"low",climate:"mediterranean",pace:"slow",vibe:["authentic","atmospheric","relaxed","foodie"],companions:["couple","solo","friends"],season:"春季",duration:"3–5天",budgetRange:"S$1,000–1,800",desc:"波尔图比里斯本更粗粝，更真实。杜罗河边橙色屋顶的老城区、蓝色瓷砖的教堂立面、葡萄牙波特酒的故乡——这里是欧洲最有性格的城市之一，而且比里斯本还便宜。",highlights:["杜罗河游船","莱罗书店","波特酒庄参观","波光里尼亚老城区"]},
+  {id:"tallinn",name:"塔林",country:"爱沙尼亚",emoji:"🏰",popularity:1,tags:["history","culture","architecture","unique","food","nightlife"],budget:"low",climate:"cold",pace:"slow",vibe:["atmospheric","historic","authentic","quirky"],companions:["couple","solo","friends"],season:"夏季",duration:"3–4天",budgetRange:"S$900–1,800",desc:"塔林的中世纪老城保存得比欧洲任何地方都完整——城墙、塔楼、石板路一样没少，而且物价比西欧便宜60%。夏天有午夜阳光，冬天有圣诞集市，波罗的海的风让这座城市永远有点神秘感。",highlights:["上城区全景","圣奥拉夫教堂登塔","塔林老市政厅广场","当地黑麦面包和奶酪"]},
+  {id:"mostar",name:"莫斯塔尔",country:"波斯尼亚",emoji:"🌉",popularity:1,tags:["history","culture","photography","architecture","unique"],budget:"low",climate:"mediterranean",pace:"slow",vibe:["atmospheric","historic","dramatic","authentic"],companions:["solo","couple","friends"],season:"春季",duration:"1–2天",budgetRange:"S$200–500",desc:"莫斯塔尔的老桥（Stari Most）是巴尔干最有力量的建筑之一——奥斯曼式的拱桥横跨内雷特瓦河，战争摧毁了它，重建又让它重生。石板街道两侧是清真寺和正教堂，穆斯林和基督徒的生活在这里交叉。",highlights:["老桥跳水","巴扎集市手工艺","清真寺礼拜","内雷特瓦河皮划艇"]},
+
+  // ── 美洲深度 ──
+  {id:"medellin",name:"麦德林",country:"哥伦比亚",emoji:"🌺",popularity:1,tags:["city","culture","food","nightlife","unique","adventure"],budget:"low",climate:"temperate",pace:"medium",vibe:["vibrant","adventurous","authentic","urban"],companions:["solo","friends","couple"],season:"冬季",duration:"4–6天",budgetRange:"S$600–1,200",desc:"麦德林是过去二十年最惊人的城市转型故事之一。曾经是世界上最危险的城市，现在是全球最具创新力的城市之一——缆车连接山上贫民窟与市中心，街头艺术、精品咖啡、波哥大式夜生活。",highlights:["缆车社区之旅","帕布罗·埃斯科瓦尔遗址","波帕扬科米纳花节","精品咖啡庄园"]},
+  {id:"galapagos",name:"加拉帕戈斯",country:"厄瓜多尔",emoji:"🦎",popularity:2,tags:["nature","wildlife","diving","unique","adventure","photography"],budget:"luxury",climate:"tropical",pace:"slow",vibe:["adventurous","unique","dramatic"],companions:["solo","couple","friends"],season:"冬季",duration:"7–10天",budgetRange:"S$5,000–12,000",desc:"加拉帕戈斯是达尔文写下进化论的地方，也是地球上动物对人类警戒心最低的地方。鬣蜥在你脚边走过，蓝脚鲣鸟在你眼前跳舞，海狮在潜水时蹭你的脸——这是真正意义上的野生动物奇迹。",highlights:["蓝脚鲣鸟求偶舞","与海狮共泳","达尔文研究站","熔岩隧道徒步"]},
+  {id:"quebec",name:"魁北克城",country:"加拿大",emoji:"🏰",popularity:2,tags:["history","culture","food","romance","architecture","unique"],budget:"high",climate:"cold",pace:"slow",vibe:["romantic","historic","atmospheric","authentic"],companions:["couple","solo","friends"],season:"冬季",duration:"3–5天",budgetRange:"S$1,800–3,500",desc:"魁北克城是北美唯一保存完整城墙的城市，也是北美最像欧洲的地方。法语街道、石砌城墙、冬季狂欢节的冰雕——在这里你会忘记自己在加拿大，以为穿越到了诺曼底某个小镇。",highlights:["老城区城墙漫步","冬季狂欢节","夫隆特纳克城堡","法式料理晚餐"]},
+  {id:"yucatan",name:"尤卡坦半岛",country:"墨西哥",emoji:"🏛️",popularity:2,tags:["history","culture","nature","unique","adventure","diving"],budget:"low",climate:"tropical",pace:"medium",vibe:["adventurous","historic","authentic","dramatic"],companions:["solo","friends","couple","family"],season:"冬季",duration:"7–10天",budgetRange:"S$800–1,800",desc:"尤卡坦半岛是玛雅文明的心脏。奇琴伊察的大金字塔、天然水井塞诺特（Cenote）的碧绿潜水、梅里达的殖民城市——而且整个半岛比坎昆便宜五倍，游客少一半。",highlights:["奇琴伊察遗址","塞诺特天然水井游泳","图鲁姆海边遗址","梅里达周末市集"]},
+
+  // ── 大洋洲更多 ──
+  {id:"vanuatu",name:"瓦努阿图",country:"瓦努阿图",emoji:"🌋",popularity:1,tags:["adventure","nature","unique","diving","culture","wildlife"],budget:"medium",climate:"tropical",pace:"slow",vibe:["adventurous","unique","authentic","dramatic"],companions:["solo","couple","friends"],season:"春季",duration:"7–10天",budgetRange:"S$2,000–4,000",desc:"瓦努阿图拥有世界上唯一可以安全走到边缘俯视的活火山（雅苏尔火山），夜晚熔岩在火山口翻腾，天空被橙红色照亮——这个经历是地球上其他任何地方都无法复制的。",highlights:["雅苏尔活火山夜览","蓝洞游泳","土著土地跳水仪式","珊瑚礁潜水"]},
+  {id:"cocos_keeling",name:"科科斯群岛",country:"澳大利亚",emoji:"🏝️",popularity:1,tags:["beach","diving","unique","nature","wildlife"],budget:"high",climate:"tropical",pace:"slow",vibe:["unique","peaceful","adventurous","relaxing"],companions:["solo","couple"],season:"冬季",duration:"5–7天",budgetRange:"S$2,500–5,000",desc:"科科斯（基林）群岛是印度洋中央一个几乎没人知道的澳大利亚领地——27个珊瑚环礁，600人居住，没有任何连锁酒店。礁湖的颜色是任何照片都拍不出来的，海龟和鲨鱼就在泳滩旁边。",highlights:["礁湖皮划艇","鲨鱼湾浮潜","海龟产卵观察","无人岛野餐"]},
+];
+
+let current = 0;
+let answers = new Array(questions.length).fill(null);
+
+function startQuiz() {
+  document.getElementById('hero-screen').style.display = 'none';
+  showScreen('quiz-screen');
+  renderQ();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function renderQ() {
+  const q = questions[current];
+  const pct = Math.round((current / questions.length) * 100);
+  document.getElementById('prog').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = (current + 1) + ' / 31';
+  document.getElementById('cat-tag').textContent = q.category;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('btn-back').style.visibility = current === 0 ? 'hidden' : 'visible';
+
+  const isLast = current === questions.length - 1;
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.textContent = isLast ? '查看结果 ✨' : '下一题';
+  nextBtn.classList.toggle('active', answers[current] !== null);
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt' + (answers[current] === i ? ' selected' : '');
+    btn.innerHTML = `<span class="opt-icon">${opt.icon}</span><span class="opt-text">${opt.text}</span>`;
+    btn.onclick = () => selectOpt(i);
+    opts.appendChild(btn);
+  });
+
+  document.getElementById('quiz-screen').classList.add('fade-in');
+}
+
+function selectOpt(i) {
+  answers[current] = i;
+  document.querySelectorAll('.opt').forEach((b, idx) => b.classList.toggle('selected', idx === i));
+  document.getElementById('btn-next').classList.add('active');
+}
+
+function goNext() {
+  if (answers[current] === null) return;
+  if (current < questions.length - 1) {
+    current++;
+    renderQ();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    showResult();
+  }
+}
+
+function goBack() {
+  if (current > 0) { current--; renderQ(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+}
+
+function score() {
+  const sc = {};
+  destinations.forEach(d => sc[d.id] = 0);
+
+  answers.forEach((ai, qi) => {
+    if (ai === null) return;
+    const w = questions[qi].options[ai].weights;
+    if (!w) return;
+    destinations.forEach(dest => {
+      let s = 0;
+      if (w.budget) {
+        if (dest.budget === w.budget) s += 3;
+        if (w.budgetAlt && dest.budget === w.budgetAlt) s += 2;
+      }
+      if (w.climate) {
+        if (dest.climate === w.climate) s += 3;
+        if (w.climateAlt && dest.climate === w.climateAlt) s += 2;
+      }
+      if (w.pace && dest.pace === w.pace) s += 2;
+      if (w.tags) w.tags.forEach(t => { if (dest.tags.includes(t)) s += 2; });
+      if (w.vibe) w.vibe.forEach(v => { if (dest.vibe.includes(v)) s += 2; });
+      if (w.companions) w.companions.forEach(c => { if (dest.companions.includes(c)) s += 2; });
+
+      // popularity 权重：用反向评分来惩罚或奖励
+      // dest.popularity: 1(超小众) ~ 5(超大众)
+      if (w.popularity) {
+        const p = dest.popularity;
+        if (w.popularity === 'mainstream') s += (p >= 4) ? 6 : (p === 3) ? 2 : -4;
+        if (w.popularity === 'mixed')      s += (p === 3) ? 4 : (p >= 4) ? 2 : 1;
+        if (w.popularity === 'hidden')     s += (p <= 2) ? 6 : (p === 3) ? 1 : -6;
+        if (w.popularity === 'secret')     s += (p === 1) ? 8 : (p === 2) ? 5 : (p === 3) ? 0 : -8;
+      }
+
+      sc[dest.id] += s;
+    });
+  });
+
+  return destinations.map(d => ({ ...d, score: sc[d.id] })).sort((a, b) => b.score - a.score);
+}
+
+function showResult() {
+  const ranked = score();
+  const top = ranked[0];
+  const runners = ranked.slice(1, 4);
+
+  const rs = document.getElementById('result-screen');
+  rs.innerHTML = `
+    <div class="result-hero fade-in">
+      <p class="result-rank">✦ 你最适合的目的地</p>
+      <div class="result-emoji">${top.emoji}</div>
+      <p class="result-name">${top.name}</p>
+      <p class="result-country">${top.country}</p>
+      <div class="result-vibe">
+        ${top.vibe.slice(0,3).map(v => `<span class="vibe-tag">${v}</span>`).join('')}
+      </div>
+    </div>
+    <div class="result-desc">${top.desc}</div>
+    <div class="info-grid">
+      <div class="info-card"><p class="info-label">最佳季节</p><p class="info-val">${top.season}</p></div>
+      <div class="info-card"><p class="info-label">建议天数</p><p class="info-val">${top.duration}</p></div>
+      <div class="info-card"><p class="info-label">人均预算</p><p class="info-val">${top.budgetRange}</p></div>
+      <div class="info-card"><p class="info-label">必体验</p><p class="info-val">${top.highlights[0]}</p></div>
+    </div>
+    <p class="runners-title">你也会喜欢</p>
+    <div class="runners">
+      ${runners.map((d,i) => `
+        <div class="runner" onclick="viewDest('${d.id}')">
+          <span class="runner-emoji">${d.emoji}</span>
+          <div class="runner-info">
+            <p class="runner-name">${d.name}</p>
+            <p class="runner-country">${d.country} · ${d.budgetRange}</p>
+          </div>
+          <span class="runner-score">#${i+2}</span>
+        </div>`).join('')}
+    </div>
+    <div class="actions">
+      <button class="btn-share" onclick="shareResult('${top.name}','${top.country}')">分享到小红书</button>
+      <button class="btn-retry" onclick="retry()">重新测一次</button>
+    </div>
+  `;
+
+  showScreen('result-screen');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function viewDest(id) {
+  const dest = destinations.find(d => d.id === id);
+  if (!dest) return;
+  alert(`${dest.emoji} ${dest.name}\n\n${dest.desc}\n\n预算：${dest.budgetRange}\n建议天数：${dest.duration}`);
+}
+
+function shareResult(name, country) {
+  const text = `我做了一个旅行测评，结果是去${name}（${country}）！来测测你的下一站在哪里？`;
+  if (navigator.share) {
+    navigator.share({ title: '我的下一站', text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => alert('文案已复制，去小红书粘贴吧！'));
+  }
+}
+
+function retry() {
+  current = 0;
+  answers = new Array(questions.length).fill(null);
+  showScreen('quiz-screen');
+  renderQ();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
